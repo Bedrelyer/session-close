@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "stop": [
+      {
+        "command": "./hooks/session-close-stop.py",
+        "loop_limit": 1
+      }
+    ]
+  }
+}
