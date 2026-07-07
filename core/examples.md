@@ -42,7 +42,7 @@
 
 **User gate**: user confirms test gap + API name stale.
 
-**Act**: write `.cursor/session-handoffs/20260706-1400-handler-fix.md`. No commit (user didn't ask).
+**Act**: write `.session-close/handoffs/20260706-1400-handler-fix.md`. No commit (user didn't ask).
 
 ---
 
@@ -63,7 +63,7 @@
 - Migration script has no dry-run flag — **risk** — verify: read `scripts/migrate_config.py`
 - ...
 
-**Act**: handoff + add bullet to `.cursor/rules/training.md` about config migration checklist.
+**Act**: handoff + add bullet to `AGENTS.md` about config migration checklist.
 
 ---
 

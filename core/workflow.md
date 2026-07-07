@@ -1,18 +1,14 @@
----
-name: session-close
-description: >-
-  Runs the two-question end-of-session ritual (What should I have asked you?
-  What am I missing?) with depth-graded reflection, handoff, and memory updates.
-  Use when the user says wrap up, end session, close session, two questions,
-  session close, 结束对话, 收尾, セッション終了, 세션 마무리, cerrar sesión,
-  fin de session, Sitzung beenden, or invokes session-close after AI work.
-disable-model-invocation: true
-argument-hint: "[depth] [focus] — e.g. deep auth refactor, 轻量, L2"
----
-
-# Session Close
-
 End substantial AI sessions with two canonical questions, graded by depth.
+
+## Detect Platform
+
+Infer the host tool from invocation style or context; **workflow logic is identical** across tools.
+
+| Signal | Platform |
+|--------|----------|
+| `@session-close` | Cursor |
+| `/session-close` | Claude Code or Codex |
+| User says 收尾 without `@`/`/` | Any — run this skill |
 
 ## Canonical Questions (verbatim)
 
@@ -129,11 +125,31 @@ Scale to tier.
 | Action | L1 | L2 | L3 | L4 |
 |--------|----|----|----|-----|
 | Handoff file | — | yes | yes | yes |
-| Update `.cursor/rules/` or `AGENTS.md` | — | if insight | yes | yes |
+| Update memory file (probe order below) | — | if insight | yes | yes |
 | Update `NOTES.md` | — | if exists | yes | yes |
+| Update `.session-close/INDEX.md` | — | yes | yes | yes |
 | Suggest git commit/stash | — | note only | note | note |
 
-**Handoff path**: `.cursor/session-handoffs/YYYYMMDD-HHMM-<slug>.md` using [templates/handoff.md](templates/handoff.md).
+### Handoff path (all platforms)
+
+Write to **project root**:
+
+`.session-close/handoffs/YYYYMMDD-HHMM-<slug>.md`
+
+Use [templates/handoff.md](templates/handoff.md). Create `.session-close/handoffs/` if missing.
+
+At L2+, append a one-line entry to `.session-close/INDEX.md` (date, slug, tier, context tags).
+
+### Memory file probe order
+
+Update the **first existing** file; at L3/L4 create `AGENTS.md` at project root if none exist:
+
+1. `AGENTS.md` (Codex + universal)
+2. `CLAUDE.md` (Claude Code)
+3. `.cursor/rules/*.mdc` or `.cursor/rules/` (Cursor — append to most relevant rule file)
+4. `NOTES.md` (if exists)
+
+Only add durable lessons — not session narrative.
 
 **Git**: never commit unless the user explicitly asks.
 
@@ -155,25 +171,11 @@ Scale to tier.
 - Running L3 ritual on a one-line question → de-escalate to L1
 - Skipping user gate on L3/L4
 - Committing without explicit user request
-
-## Stop Hook (auto-prompt)
-
-A user-level `stop` hook at `~/.cursor/hooks/session-close-stop.py` runs when an agent turn completes.
-
-**Behavior**:
-- Fires at most **once** per conversation (`loop_limit: 1`)
-- Only when `status` is `completed` and transcript shows substantive work (Write/StrReplace/Shell/etc.)
-- Skips if user already said 收尾/skip, or session-close already ran
-- Skips Ask mode and background agents
-- Injects a follow-up asking whether to run `@session-close` (language follows last user message)
-
-**Disable**: remove the `stop` entry from `~/.cursor/hooks.json`, or comment it out.
-
-**Debug**: Cursor → Hooks output channel; hook prints `{}` when skipping.
+- Writing handoffs to tool-specific paths (`.cursor/session-handoffs/`) — use `.session-close/handoffs/` only
 
 ## Additional Resources
 
 - Full multilingual triggers: [triggers.md](triggers.md)
 - Handoff template: [templates/handoff.md](templates/handoff.md)
 - Worked examples by tier: [examples.md](examples.md)
-- Stop hook script: `~/.cursor/hooks/session-close-stop.py`
+- Cross-platform install and hooks: see repo `PORTABILITY.md`

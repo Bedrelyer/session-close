@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stop hook: suggest @session-close after substantive agent turns."""
+"""Cursor stop hook: suggest session-close after substantive agent turns."""
 
 from __future__ import annotations
 
@@ -8,20 +8,18 @@ import re
 import sys
 from pathlib import Path
 
-# User already closing or skipping — do not re-prompt
 CLOSE_OR_SKIP = re.compile(
     r"(?:"
     r"wrap[\s-]?up|end session|close session|session close|two questions|"
     r"结束对话|收尾|跳过收尾|跳过|"
     r"セッション終了|세션\s*마무리|"
     r"cerrar sesi[oó]n|fin de session|cl[oô]turer|"
-    r"Sitzung beenden|session-close|@session-close|"
+    r"Sitzung beenden|session-close|@session-close|/session-close|"
     r"L0\s*Skip|Session Close Complete"
     r")",
     re.IGNORECASE,
 )
 
-# Substantive work signals in agent transcripts (jsonl or plain text)
 SUBSTANTIVE = re.compile(
     r"(?:Write|StrReplace|EditNotebook|Delete|ApplyPatch|"
     r'"tool"\s*:\s*"(?:Write|StrReplace|EditNotebook|Delete|Shell)"|'
@@ -36,7 +34,8 @@ ALREADY_CLOSED = re.compile(
 
 FOLLOWUP_ZH = (
     "Agent 本轮已结束。若本次有实质工作（改代码、多步任务、重要决策），"
-    "请询问用户是否运行 @session-close 做两个经典问题的收尾反思：\n"
+    "请询问用户是否运行 session-close（Cursor: @session-close，Claude/Codex: /session-close）"
+    "做两个经典问题的收尾反思：\n"
     "1. What should I have asked you?\n"
     "2. What am I missing?\n"
     "用户回复「收尾」则读取 session-close skill 并执行；"
@@ -46,7 +45,9 @@ FOLLOWUP_ZH = (
 FOLLOWUP_EN = (
     "This agent turn ended. If the session involved substantive work "
     "(code changes, multi-step tasks, or important decisions), "
-    "ask the user whether to run @session-close for the two-question ritual:\n"
+    "ask the user whether to run session-close "
+    "(Cursor: @session-close, Claude Code/Codex: /session-close) "
+    "for the two-question ritual:\n"
     "1. What should I have asked you?\n"
     "2. What am I missing?\n"
     "If they say wrap up / 收尾, load the session-close skill and run it. "
@@ -64,7 +65,6 @@ def _tail(text: str, n: int = 12000) -> str:
 
 
 def _last_user_text(transcript: str) -> str:
-    """Best-effort extract of the latest user message from transcript."""
     user_chunks: list[str] = []
     for line in transcript.splitlines():
         line = line.strip()
