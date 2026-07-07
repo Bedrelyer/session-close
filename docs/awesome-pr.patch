@@ -1,0 +1,9 @@
+diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@ -84,6 +84,7 @@ Ready-to-use `SKILL.md` files you can copy into your `.cursor/skills/` directory
+ - [`systematic-debugging`](resources/systematic-debugging/SKILL.md) - Structured debugging methodology — reproduce, isolate, hypothesize, and verify using git bisect, binary search, and logging.
+ - [`chatcrystal`](https://github.com/ZengLiangYi/ChatCrystal/tree/main/skills) - Local-first memory recall and writeback skills for AI coding sessions via ChatCrystal Core and MCP.
++- [session-close](https://github.com/Bedrelyer/session-close) - End AI sessions with two reflection questions; generates handoff docs and update logs. Cursor, Claude Code, Codex.
+ 
+ ### Infrastructure & DevOps
