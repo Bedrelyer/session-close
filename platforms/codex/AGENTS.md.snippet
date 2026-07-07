@@ -1,8 +1,7 @@
-## Session close reminder
+## Session close (explicit invoke only)
 
-After substantive work (multi-file edits, architecture decisions, or important debugging), if the user has not already said wrap up / 收尾 / skip / 跳过, ask whether to run `/session-close` for the two-question ritual:
+When the user says 收尾 / wrap up / `@session-close` / `/session-close`:
 
-1. What should I have asked you?
-2. What am I missing?
-
-Handoff files go in `.session-close/handoffs/` at the project root.
+- Default **inline** reflection: answer Q1/Q2 in reasoning, show ≤3-line digest, single turn.
+- Full Q1/Q2 go in `.session-close/handoffs/` handoff file.
+- Do **not** auto-prompt for session-close at end of unrelated turns.

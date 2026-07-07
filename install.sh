@@ -6,7 +6,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-SHARED_DESCRIPTION='Runs the two-question end-of-session ritual (What should I have asked you? What am I missing?) with depth-graded reflection, handoff, and memory updates. Works in Cursor, Claude Code, and Codex. Use when the user says wrap up, end session, close session, two questions, session close, 结束对话, 收尾, invokes @session-close or /session-close, or after substantive AI work.'
+SHARED_DESCRIPTION='Runs the two-question end-of-session ritual when explicitly invoked (@session-close, /session-close, 收尾). Default inline mode: Q1/Q2 in reasoning, single-turn digest; optional off (不反思) or interactive (反思讨论). Handoff to .session-close/handoffs/. Works in Cursor, Claude Code, and Codex.'
 
 write_skill_md() {
   local platform_file="$1"
@@ -39,10 +39,8 @@ install_cursor() {
   mkdir -p "${HOME}/.cursor/hooks"
   cp "$ROOT/platforms/cursor/hooks/session-close-stop.py" "${HOME}/.cursor/hooks/"
   chmod +x "${HOME}/.cursor/hooks/session-close-stop.py"
-  echo "Installed hook → ${HOME}/.cursor/hooks/session-close-stop.py"
-  echo ""
-  echo "Merge stop hook into ~/.cursor/hooks.json — see:"
-  echo "  $ROOT/platforms/cursor/hooks/hooks.json.example"
+  echo "Installed hook (noop) → ${HOME}/.cursor/hooks/session-close-stop.py"
+  echo "  Hook does not auto-prompt; invoke @session-close explicitly."
 }
 
 install_claude() {

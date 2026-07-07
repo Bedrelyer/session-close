@@ -7,4 +7,4 @@
 | Project install | `.cursor/skills/session-close/` |
 | Handoff | `.session-close/handoffs/` (project root) |
 | Memory probe | `AGENTS.md` → `CLAUDE.md` → `.cursor/rules/` → `NOTES.md` |
-| Auto-prompt hook | Optional — see repo `platforms/cursor/hooks/` |
+| Auto-prompt hook | Disabled (noop) — invoke `@session-close` explicitly |

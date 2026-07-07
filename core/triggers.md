@@ -66,6 +66,18 @@ Any phrase below activates `session-close`. Partial matches and mixed-language m
 | Two questions | `zwei Fragen`, `die zwei Fragen` |
 | Depth override | `überspringen`, `kurz`, `standard`, `tief`, `kritisch` |
 
+## Reflection Mode Triggers
+
+Priority: **off** > **interactive** > **inline** (default when session-close is invoked).
+
+| Mode | English | 简体中文 | 日本語 |
+|------|---------|----------|--------|
+| **off** (skip Q1/Q2) | `no reflection`, `close without reflection`, `skip reflection` | `不反思`, `不要反思`, `无反思收尾` | `反省なし`, `振り返り不要` |
+| **interactive** (full Q1/Q2 + wait) | `review reflection`, `discuss reflection` | `反思讨论`, `讨论反思`, `详细反思` | `振り返り討論` |
+| **inline** (default) | (any close trigger without off/interactive keywords) | `收尾` (default) | `セッション終了` (default) |
+
+Other languages: use English phrases or the closest equivalent in the tables above.
+
 ## Matching Rules
 
 1. **Case-insensitive** for Latin scripts.
@@ -73,6 +85,7 @@ Any phrase below activates `session-close`. Partial matches and mixed-language m
 3. **Skill invocation** — `@session-close`, `/session-close`, or `session-close` alone always activates at L2 unless depth override present.
 4. **Focus suffix** — text after the trigger becomes reflection focus (e.g. `收尾 auth模块` → focus on auth).
 5. **Explicit tier** — `L0`–`L4` or `L1`/`L2`/`L3`/`L4` in the message overrides keyword detection.
+6. **Reflection mode** — `不反思` / `no reflection` → **off**; `反思讨论` / `review reflection` → **interactive**; otherwise **inline**.
 
 ## Depth Detection Priority
 

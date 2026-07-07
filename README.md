@@ -4,10 +4,22 @@
 
 支持 **Cursor**、**Claude Code**、**OpenAI Codex**。
 
+**仅在你显式调用时运行**（`@session-close` / `/session-close` / `收尾`），不会自动多开一轮对话。
+
 ## 两个问题（原文）
 
 1. **What should I have asked you?**
 2. **What am I missing?**
+
+## 反思模式
+
+| 模式 | 触发示例 | 对话轮次 | 用户可见 |
+|------|----------|----------|----------|
+| **inline**（默认） | `收尾`, `@session-close` | 1 | ≤3 行 digest；完整 Q1/Q2 在 handoff |
+| **off** | `收尾 不反思`, `no reflection` | 1 | 无反思，仅 handoff + Now/Next |
+| **interactive** | `收尾 反思讨论`, `review reflection` | 2+ | 完整 Q1/Q2 + 等待确认 |
+
+inline 模式下 Q1/Q2 在**思考过程**中完成，不占用额外对话轮次。
 
 ## 反思分级
 
@@ -18,8 +30,6 @@
 | L2 | Standard | 常规开发（默认） |
 | L3 | Deep | 多文件 / 架构 |
 | L4 | Critical | 上线 / 安全 / 不可逆 |
-
-触发词支持中/英/日/韩/西/法/德，详见安装后的 `triggers.md`。
 
 ## 统一路径（三端相同）
 
@@ -41,54 +51,27 @@ chmod +x install.sh
 |------|------|----------|
 | Cursor | `./install.sh cursor` | `@session-close` 或「收尾」 |
 | Claude Code | `./install.sh claude` | `/session-close` 或「收尾」 |
-| Codex | `./install.sh codex` | `/session-close` 或按 description 发现 |
+| Codex | `./install.sh codex` | `/session-close` |
 | 全部 | `./install.sh all` | — |
 
-### Cursor 可选 Stop Hook
+### Cursor Stop Hook
 
-`install.sh cursor` 会复制 hook 脚本。将 `platforms/cursor/hooks/hooks.json.example` 中的 `stop` 条目合并到 `~/.cursor/hooks.json`。
+已注册但 **noop**（不自动追问），避免额外对话轮。用户需显式调用 session-close。
 
 ### Codex 额外步骤
 
 1. 合并 `platforms/codex/config.toml.snippet` 到 `~/.codex/config.toml`
-2. 可选：将 `platforms/codex/AGENTS.md.snippet` 追加到 `~/.codex/AGENTS.md`
-
-### Claude Code 可选 Hook
-
-见 [platforms/claude-code/hooks.md](platforms/claude-code/hooks.md)。
+2. 可选：`platforms/codex/AGENTS.md.snippet` → `~/.codex/AGENTS.md`
 
 ## 使用示例
 
 ```
-@session-close          # Cursor
-/session-close          # Claude Code / Codex
-收尾
+收尾                      # inline：单轮 digest + handoff
+收尾 不反思                # off：无 Q1/Q2
+收尾 反思讨论              # interactive：完整反思 + 等你确认
+@session-close
 deep close auth refactor
 L4 critical close 准备上线
-轻量收尾
-```
-
-## 仓库结构
-
-```
-core/                 # 工具无关工作流（单一来源）
-platforms/
-  cursor/             # Cursor 路径 + stop hook
-  claude-code/        # Claude Code 路径 + hooks 文档
-  codex/              # Codex 路径 + config/AGENTS 片段
-install.sh            # 合并 core + platform → 各端 skills 目录
-PORTABILITY.md        # 三端对照与迁移说明
-```
-
-## 无 Skill 时的最小 Prompt
-
-任意聊天工具可粘贴：
-
-```text
-请按 session-close 流程收尾（L2）：
-1. What should I have asked you?
-2. What am I missing?
-Handoff 写入 .session-close/handoffs/
 ```
 
 ## License

@@ -1,45 +1,27 @@
-# Claude Code — optional session-close reminder hook
+# Claude Code — session-close (no auto-prompt)
 
-Codex has no built-in equivalent to Cursor's `stop` hook with `followup_message`. Claude Code supports hooks via settings — see [Claude Code hooks docs](https://code.claude.com/docs/en/hooks).
+Reflection is **optional** and **inline by default**. Do not auto-ask whether to run session-close at turn end.
 
-## Option A: Stop hook (after each agent turn)
-
-Add to your Claude Code hooks configuration (path varies by version; often `~/.claude/settings.json` or project `.claude/settings.json`):
-
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "If this session involved substantive code changes or multi-step work, and the user has NOT already said wrap up / 收尾 / skip / 跳过, ask whether to run /session-close for the two-question ritual (What should I have asked you? What am I missing?). If trivial Q&A only, do nothing extra."
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-Adjust to match your Claude Code version's hook schema.
-
-## Option B: SessionEnd hook (when chat closes)
-
-Fire-and-forget logging only — cannot auto-continue the conversation. Use for analytics, not for prompting session-close.
-
-## Option C: CLAUDE.md rule (simplest)
+## Recommended: CLAUDE.md rule
 
 Add to project `CLAUDE.md` or `~/.claude/CLAUDE.md`:
 
 ```markdown
-After substantive work, if the user has not closed the session, suggest running `/session-close` before they leave.
+When the user says 收尾 / wrap up / /session-close:
+- Run session-close skill
+- Default inline mode: Q1/Q2 in reasoning, ≤3-line digest, single turn
+- Use 反思讨论 for interactive mode (full bullets + wait for user)
 ```
 
-## Cursor hook script
+## Stop hook — not recommended
 
-For a full Python stop hook with transcript detection, copy from this repo:
+Previous prompt-hook examples that asked "want to run session-close?" at turn end caused an **extra conversation round**. Do not use them.
 
-`platforms/cursor/hooks/session-close-stop.py` (Cursor-specific stdin/stdout contract).
+If you need a hook for logging only, return `{}` without `followup_message`.
+
+## Install
+
+```bash
+./install.sh claude
+# or project: cp -r skill layout to .claude/skills/session-close/
+```

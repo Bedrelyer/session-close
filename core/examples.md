@@ -1,91 +1,107 @@
-# Examples by Reflection Tier
+# Examples by Reflection Tier and Mode
 
-## L1 Glance — conceptual Q&A (zh-CN trigger)
+## L1 Glance — inline (zh-CN trigger)
 
 **Trigger**: `轻量收尾，帮我确认一下刚才的解释`
 
-**Auto-detect**: single concept question, no file edits → L1 (user override confirms).
+**Mode**: inline (default). **Tier**: L1.
 
 **Gather**: goal = explain WebSocket handshake; accomplished = explained.
 
-**Reflection**:
+**Internal Q1/Q2** (in reasoning only): 1–2 bullets each.
 
-### Q1 — What should I have asked you?
-- "Does my server use `wss://` or `ws://`?" — I assumed local dev without asking — would have tailored the TLS section.
+**User-visible digest**:
+- Q1: Should have asked wss vs ws upfront.
+- Q2: Production proxy timeout defaults unchecked — suggestion.
 
-### Q2 — What am I missing?
-- Production reverse-proxy timeout defaults — **suggestion** — verify: check nginx `proxy_read_timeout` docs.
-
-**Act**: no handoff. Verbal close only.
+**Act**: no handoff. Single turn. No user gate.
 
 ---
 
-## L2 Standard — single feature fix (en trigger)
+## L2 Standard — inline (en trigger)
 
 **Trigger**: `wrap up`
 
-**Auto-detect**: 4 turns, 2 files edited, tests not mentioned → L2.
+**Mode**: inline. **Tier**: L2 (4 turns, 2 files edited).
 
 **Gather**: `git diff --stat` shows `handler.py` + `test_handler.py` (test not created).
 
-**Reflection** (3 bullets each, abbreviated):
+**User-visible** (single turn):
 
-**Q1**
-- "Should new handler be backward-compatible with v1 clients?" — assumed greenfield.
-- "What's the error contract for malformed payloads?" — never defined.
-- "Run existing test suite before editing?" — skipped.
+```markdown
+## Session Close Complete — L2 Standard (inline)
 
-**Q2**
-- No test file for new branch — **risk** — verify: `pytest tests/test_handler.py -k malformed`
-- Docstring still references old API name — **suggestion** — verify: read `handler.py` L12–20
-- Rate limit behavior unchanged but payload size grew — **risk** — verify: check middleware config
+**Reflection**:
+- Q1: Should have confirmed backward-compat and error contract before editing.
+- Q2: Missing tests for malformed payloads — risk.
 
-**User gate**: user confirms test gap + API name stale.
+**Handoff**: `.session-close/handoffs/20260706-1400-handler-fix.md`
+**Now**: —
+**Next**: `pytest tests/test_handler.py -k malformed`
+```
 
-**Act**: write `.session-close/handoffs/20260706-1400-handler-fix.md`. No commit (user didn't ask).
+**Handoff file** contains full 3-bullet Q1 and Q2. No user gate. No second turn.
 
 ---
 
-## L3 Deep — multi-file refactor (ja + override)
+## L2 — off (zh-CN)
+
+**Trigger**: `收尾 不反思`
+
+**Mode**: off. **Tier**: L2.
+
+**Phase 2**: skipped.
+
+**User-visible**:
+
+```markdown
+## Session Close Complete — L2 Standard (off)
+
+**Reflection**: skipped (off mode)
+**Handoff**: `.session-close/handoffs/20260706-1500-handler-fix.md`
+**Now**: —
+**Next**: run pytest on handler tests
+```
+
+Handoff has Goal/Accomplished/Now/Next only — no Q1/Q2 section.
+
+---
+
+## L2 — interactive (zh-CN)
+
+**Trigger**: `收尾 反思讨论`
+
+**Mode**: interactive. **Tier**: L2.
+
+**Turn 1**: full Q1/Q2 bullets in chat + "Which points land?"
+
+**Turn 2** (after user confirms test gap): Now/Next + handoff + closing report.
+
+---
+
+## L3 Deep — inline (ja + override)
 
 **Trigger**: `セッション終了 深度 config refactor`
 
-**Tier**: L3 (explicit `深度` override).
+**Mode**: inline. **Tier**: L3.
 
-**Gather**: 6 files, config schema change, migration script added, no integration test run.
+**Gather**: 6 files, config schema change, migration script added.
 
-**Q1** (4 bullets with evidence):
-- "Which env vars must stay backward-compatible?" — `config.py` removed `LEGACY_PORT` without deprecation note.
-- "Who consumes `TrainingConfig` outside training/?" — only searched `training/` dir.
-- ...
+**User-visible**: ≤3-line digest + handoff path. Full Q1/Q2 in handoff + `AGENTS.md` bullet.
 
-**Q2** (4 bullets):
-- Migration script has no dry-run flag — **risk** — verify: read `scripts/migrate_config.py`
-- ...
-
-**Act**: handoff + add bullet to `AGENTS.md` about config migration checklist.
+Single turn. No user gate.
 
 ---
 
-## L4 Critical — production deploy (mixed en/zh)
+## L4 Critical — interactive (mixed en/zh)
 
-**Trigger**: `critical close 准备上线 norm stats 脚本`
+**Trigger**: `critical close 反思讨论 准备上线 norm stats 脚本`
 
-**Tier**: L4 (deploy stakes + explicit override).
+**Mode**: interactive. **Tier**: L4.
 
-**Gather** + risk scan: uncommitted changes, script writes to shared NFS path, no rollback documented.
+**Turn 1**: 5 bullets each Q1/Q2 with blocker/risk + user gate.
 
-**Q1** (5 bullets): includes "What happens if stats file already exists?" — never asked.
-
-**Q2** (5 bullets): at least two `blocker`/`risk`:
-- Overwrite behavior on existing `norm_stats.json` — **blocker** — verify: run script with `--dry-run` or read overwrite branch
-- No backup step before write — **risk** — verify: confirm backup path in ops runbook
-
-**User gate**: user confirms overwrite is blocker; agrees to add dry-run before Now.
-
-**Now**: document dry-run requirement in handoff; do NOT run deploy commands.
-
-**Act**: handoff with full Resume Prompt + update `AGENTS.md` deploy checklist.
+**Turn 2**: user confirms overwrite blocker → Now documents dry-run in handoff; no deploy commands.
 
 ---
 
