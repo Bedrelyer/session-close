@@ -2,7 +2,7 @@
 
 All notable changes to the **session-close** skill repository.
 
-## [Unreleased]
+## [0.4.0] — 2026-07-07
 
 ### Added
 
