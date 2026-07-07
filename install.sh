@@ -30,6 +30,7 @@ write_skill_md() {
   cp "$ROOT/core/triggers.md" "$dest/triggers.md"
   cp "$ROOT/core/examples.md" "$dest/examples.md"
   cp "$ROOT/core/templates/handoff.md" "$dest/templates/handoff.md"
+  cp "$ROOT/core/templates/update-log-entry.md" "$dest/templates/update-log-entry.md"
   echo "Installed skill → $dest"
 }
 

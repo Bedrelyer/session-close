@@ -36,6 +36,7 @@
 - Q2: Missing tests for malformed payloads — risk.
 
 **Handoff**: `.session-close/handoffs/20260706-1400-handler-fix.md`
+**Update log**: `.session-close/update-log.md` (3 entries: handoff create, INDEX append, no memory)
 **Now**: —
 **Next**: `pytest tests/test_handler.py -k malformed`
 ```
@@ -59,6 +60,7 @@
 
 **Reflection**: skipped (off mode)
 **Handoff**: `.session-close/handoffs/20260706-1500-handler-fix.md`
+**Update log**: `.session-close/update-log.md` (2 entries: handoff create, INDEX append)
 **Now**: —
 **Next**: run pytest on handler tests
 ```

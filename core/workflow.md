@@ -168,7 +168,26 @@ Scale to tier.
 | Update memory file (probe order below) | — | if insight | yes | yes |
 | Update `NOTES.md` | — | if exists | yes | yes |
 | Update `.session-close/INDEX.md` | — | yes | yes | yes |
+| Append `.session-close/update-log.md` | — | yes | yes | yes |
 | Suggest git commit/stash | — | note only | note | note |
+
+### Update log (mandatory)
+
+**Every create or update** in Phase 4 must append to `.session-close/update-log.md` at project root.
+
+Rules:
+1. Create `.session-close/` if missing.
+2. If `update-log.md` does not exist, create it with header `# Session Close Update Log`.
+3. After **each** file operation (handoff create, INDEX append, memory file update, NOTES update), append one table row using [templates/update-log-entry.md](templates/update-log-entry.md).
+4. Group rows from the same session close under one `## timestamp — tier (mode)` heading.
+5. `Action` values: `create`, `append`, `update`.
+6. Never skip logging because the change was small.
+
+Example row:
+
+```markdown
+| update | `AGENTS.md` | added config migration checklist bullet |
+```
 
 ### Handoff path (all platforms)
 
@@ -204,6 +223,7 @@ Single-turn output for **inline** and **off** (no follow-up question):
 **Reflection**: {digest lines, or "skipped (off mode)"}
 **Handoff**: {path or "none"}
 **Memory**: {files updated or "none"}
+**Update log**: `.session-close/update-log.md` ({N} entries appended)
 **Now**: ...
 **Next**: ...
 ```
@@ -217,10 +237,12 @@ Single-turn output for **inline** and **off** (no follow-up question):
 - Auto-running session-close without explicit user invocation
 - Committing without explicit user request
 - Writing handoffs to tool-specific paths (`.cursor/session-handoffs/`) — use `.session-close/handoffs/` only
+- Creating or updating Phase 4 files without appending to `update-log.md`
 
 ## Additional Resources
 
 - Full multilingual triggers: [triggers.md](triggers.md)
 - Handoff template: [templates/handoff.md](templates/handoff.md)
+- Update log row template: [templates/update-log-entry.md](templates/update-log-entry.md)
 - Worked examples by tier: [examples.md](examples.md)
 - Cross-platform install and hooks: see repo `PORTABILITY.md`

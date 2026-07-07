@@ -11,6 +11,7 @@ Cross-platform reference for session-close across Cursor, Claude Code, and Codex
 | Invoke | `@session-close` | `/session-close` | `/session-close` |
 | Reflection default | **inline** (1 turn) | **inline** | **inline** |
 | Handoff (all) | `.session-close/handoffs/` | `.session-close/handoffs/` | `.session-close/handoffs/` |
+| Update log (all) | `.session-close/update-log.md` | same | same |
 | Memory probe | AGENTS.md → CLAUDE.md → .cursor/rules → NOTES.md | AGENTS.md → CLAUDE.md → NOTES.md | AGENTS.md → NOTES.md |
 | Auto end-of-turn prompt | **disabled** (noop hook) | not recommended | not recommended |
 | Install | `./install.sh cursor` | `./install.sh claude` | `./install.sh codex` |
@@ -32,6 +33,7 @@ From `core/workflow.md`:
 - L0–L4 depth tiers
 - Gather → Orient (internal in inline) → [User gate if interactive] → Now/Next → Act
 - Handoff to `.session-close/handoffs/`
+- **Update log**: append every Phase 4 file change to `.session-close/update-log.md`
 
 ## Hook policy
 
