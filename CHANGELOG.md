@@ -2,6 +2,15 @@
 
 All notable changes to the **session-close** skill repository.
 
+## [0.5.0] — 2026-07-07
+
+### Added
+
+- English README (default) + `README.zh-CN.md` with language switcher
+- Social preview asset (`docs/social-preview.png`) and GitHub metadata guide
+- Launch templates under `docs/launch/` for HN, Reddit, X
+- awesome-cursor-skills PR body template
+
 ## [0.4.0] — 2026-07-07
 
 ### Added

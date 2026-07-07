@@ -1,65 +1,86 @@
 # session-close
 
-三端通用 Agent Skill：用两个经典问题结束 AI 会话，并做分级反思与会话交接（handoff）。
+**English** | [简体中文](./README.zh-CN.md)
 
-支持 **Cursor**、**Claude Code**、**OpenAI Codex**。
+> End every AI session with two questions. Handoff docs, reflection tiers, cross-platform.
 
-**仅在你显式调用时运行**（`@session-close` / `/session-close` / `收尾`），不会自动多开一轮对话。
+Cross-platform Agent Skill that closes AI coding sessions with two canonical reflection questions and structured handoff documents.
 
-**当前版本**：0.4.0 · 完整变更见 [CHANGELOG.md](CHANGELOG.md)
+Works with **Cursor**, **Claude Code**, and **OpenAI Codex**.
 
-## 什么是 Handoff？
+**Runs only when you explicitly invoke it** (`@session-close` / `/session-close` / `wrap up` / `收尾`). Does not auto-start an extra conversation round.
 
-**Handoff**（会话交接文档）是一次 session-close 结束时写入项目的 Markdown 文件，用来把「这次聊了什么、做到了什么、下次从哪继续」固定下来，方便**下一次对话**（或换 Agent / 换工具）直接接上，不必从头复述背景。
+**Current version**: 0.5.0 · See [CHANGELOG.md](CHANGELOG.md) for full history.
 
-典型内容包括：
+## One-line install
 
-| 区块 | 作用 |
-|------|------|
-| Goal / Accomplished / Deferred | 目标、已完成、暂缓及原因 |
-| Q1 / Q2 | 两个经典问题的**完整**回答（inline 模式下聊天里只显示 digest，全文在这里） |
-| Now / Next | 当前状态与下一步可执行动作 |
-| Resume Prompt | 可复制粘贴的续聊提示词 |
-| Files Touched | 本次涉及的文件 |
+```bash
+git clone https://github.com/Bedrelyer/session-close.git && cd session-close && ./install.sh cursor
+```
 
-文件路径：`.session-close/handoffs/YYYYMMDD-HHMM-<slug>.md`（例如 `20260707-1430-handler-fix.md`）。  
-索引汇总在 `.session-close/INDEX.md`。
+## Before vs After
 
-## 两个问题（原文）
+| | End chat normally | session-close |
+|---|-------------------|---------------|
+| Context | Stays in chat history; re-explain next time | Written to `.session-close/handoffs/` |
+| Reflection | None | Two canonical questions (Q1 / Q2) |
+| Resume | Manual copy-paste | Ready-to-paste Resume Prompt |
+| Audit trail | None | INDEX + update-log |
+
+## The two questions
 
 1. **What should I have asked you?**
 2. **What am I missing?**
 
-## 反思模式
+> *I end every AI coding session with these two questions. This skill automates that into a handoff file your next session can resume from — one turn, no extra chat round.*
 
-| 模式 | 触发示例 | 对话轮次 | 用户可见 |
-|------|----------|----------|----------|
-| **inline**（默认） | `收尾`, `@session-close` | 1 | ≤3 行 digest；完整 Q1/Q2 在交接文档 |
-| **off** | `收尾 不反思`, `no reflection` | 1 | 无反思，仅交接文档 + Now/Next |
-| **interactive** | `收尾 反思讨论`, `review reflection` | 2+ | 完整 Q1/Q2 + 等待确认 |
+## What is a Handoff?
 
-inline 模式下 Q1/Q2 在**思考过程**中完成，不占用额外对话轮次。
+A **handoff** is a Markdown file written to your project when session-close finishes. It captures what you discussed, what was done, and where to pick up next — so the **next conversation** (or a different agent / tool) can continue without re-explaining context.
 
-## 反思分级
+Typical sections:
 
-| Tier | 名称 | 场景 |
+| Section | Purpose |
+|---------|---------|
+| Goal / Accomplished / Deferred | Target, done items, deferred items and why |
+| Q1 / Q2 | **Full** answers to the two questions (inline mode shows a ≤3-line digest in chat; full text lives here) |
+| Now / Next | Current state and concrete next actions |
+| Resume Prompt | Copy-paste prompt for the next session |
+| Files Touched | Files involved this session |
+
+Path: `.session-close/handoffs/YYYYMMDD-HHMM-<slug>.md` (e.g. `20260707-1430-handler-fix.md`).  
+Index: `.session-close/INDEX.md`.
+
+## Reflection modes
+
+| Mode | Trigger examples | Turns | User sees |
+|------|------------------|-------|-----------|
+| **inline** (default) | `wrap up`, `@session-close`, `收尾` | 1 | ≤3-line digest; full Q1/Q2 in handoff file |
+| **off** | `no reflection`, `收尾 不反思` | 1 | No reflection; handoff + Now/Next only |
+| **interactive** | `review reflection`, `收尾 反思讨论` | 2+ | Full Q1/Q2 in chat + waits for confirmation |
+
+In **inline** mode, Q1/Q2 are answered in reasoning — no extra conversation turn.
+
+## Depth tiers
+
+| Tier | Name | When |
 |------|------|------|
-| L0 | Skip | 跳过 |
-| L1 | Glance | 轻量问答 |
-| L2 | Standard | 常规开发（默认） |
-| L3 | Deep | 多文件 / 架构 |
-| L4 | Critical | 上线 / 安全 / 不可逆 |
+| L0 | Skip | Trivial / skip |
+| L1 | Glance | Quick Q&A |
+| L2 | Standard | Regular dev (default) |
+| L3 | Deep | Multi-file / architecture |
+| L4 | Critical | Ship / security / irreversible |
 
-## 统一路径（三端相同）
+## Unified paths (all platforms)
 
-| 用途 | 路径 |
-|------|------|
-| 会话交接（Handoff） | `.session-close/handoffs/YYYYMMDD-HHMM-<slug>.md` |
-| 索引 | `.session-close/INDEX.md` |
-| 更新日志 | `.session-close/update-log.md`（每次写入/更新必记一条） |
-| 记忆 | `AGENTS.md` → `CLAUDE.md` → `.cursor/rules/` → `NOTES.md` |
+| Purpose | Path |
+|---------|------|
+| Handoff | `.session-close/handoffs/YYYYMMDD-HHMM-<slug>.md` |
+| Index | `.session-close/INDEX.md` |
+| Update log | `.session-close/update-log.md` (one entry per Phase 4 write/update) |
+| Memory | `AGENTS.md` → `CLAUDE.md` → `.cursor/rules/` → `NOTES.md` |
 
-## 快速安装
+## Quick install
 
 ```bash
 git clone https://github.com/Bedrelyer/session-close.git
@@ -67,43 +88,52 @@ cd session-close
 chmod +x install.sh
 ```
 
-| 工具 | 命令 | 调用方式 |
-|------|------|----------|
-| Cursor | `./install.sh cursor` | `@session-close` 或「收尾」 |
-| Claude Code | `./install.sh claude` | `/session-close` 或「收尾」 |
+| Tool | Command | Invoke |
+|------|---------|--------|
+| Cursor | `./install.sh cursor` | `@session-close` or `wrap up` / `收尾` |
+| Claude Code | `./install.sh claude` | `/session-close` or `wrap up` / `收尾` |
 | Codex | `./install.sh codex` | `/session-close` |
-| 全部 | `./install.sh all` | — |
+| All | `./install.sh all` | — |
 
-### Cursor Stop Hook
+### Cursor stop hook
 
-已注册但 **noop**（不自动追问），避免额外对话轮。用户需显式调用 session-close。
+Registered but **noop** (no auto follow-up). Invoke `@session-close` explicitly.
 
-### Codex 额外步骤
+### Codex extra steps
 
-1. 合并 `platforms/codex/config.toml.snippet` 到 `~/.codex/config.toml`
-2. 可选：`platforms/codex/AGENTS.md.snippet` → `~/.codex/AGENTS.md`
+1. Merge `platforms/codex/config.toml.snippet` into `~/.codex/config.toml`
+2. Optional: `platforms/codex/AGENTS.md.snippet` → `~/.codex/AGENTS.md`
 
-## 使用示例
+## Usage examples
 
 ```
-收尾                      # inline：单轮 digest + 交接文档
-收尾 不反思                # off：无 Q1/Q2
-收尾 反思讨论              # interactive：完整反思 + 等你确认
+wrap up                   # inline: single-turn digest + handoff
+wrap up no reflection     # off: skip Q1/Q2
+review reflection         # interactive: full Q1/Q2 + wait for you
 @session-close
+收尾                       # Chinese trigger also works
 deep close auth refactor
-L4 critical close 准备上线
+L4 critical close ready to ship
 ```
 
-## 版本记录
+## Version history
 
-| 版本 | 日期 | 要点 |
-|------|------|------|
-| **0.4.0** | 2026-07-07 | Phase 4 每次文件变更必记 `.session-close/update-log.md`；新增日志行模板 |
-| **0.3.0** | 2026-07-07 | 反思模式 inline / off / interactive；inline 默认单轮；Stop hook 改为 noop |
-| **0.2.0** | 2026-07-06 | 三端结构 `core/` + `platforms/`；统一 handoff 路径；`install.sh` |
-| **0.1.0** | 2026-07-06 | 初始 Cursor skill；L0–L4 分级；两问工作流；多语言触发词 |
+| Version | Date | Highlights |
+|---------|------|------------|
+| **0.5.0** | 2026-07-07 | English default README + zh-CN switcher; launch docs |
+| **0.4.0** | 2026-07-07 | Mandatory update log for every Phase 4 file change |
+| **0.3.0** | 2026-07-07 | Reflection modes inline / off / interactive; noop stop hook |
+| **0.2.0** | 2026-07-06 | Cross-platform `core/` + `platforms/`; unified handoff path |
+| **0.1.0** | 2026-07-06 | Initial Cursor skill; L0–L4 tiers; two-question workflow |
 
-详细条目见 [CHANGELOG.md](CHANGELOG.md)。
+Full entries in [CHANGELOG.md](CHANGELOG.md).
+
+## Links
+
+- [PORTABILITY.md](PORTABILITY.md) — cross-platform install and path reference
+- [Issues](https://github.com/Bedrelyer/session-close/issues) — feedback and feature requests
+
+> Maintenance note: keep [README.md](./README.md) and [README.zh-CN.md](./README.zh-CN.md) in sync when editing.
 
 ## License
 
